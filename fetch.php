@@ -1,14 +1,28 @@
 <?php
-// Väljer en stabilare RSS‑Bridge‑instans
-$source = 'https://rss-bridge.nixnet.services/?action=display&bridge=GoComicsBridge&comicname=brewsterrockit&format=Atom';
-$target = __DIR__ . '/brewsterrockit.xml';
 
-$data = @file_get_contents($source);
+function fetchGoComics($comic, $title) {
+    $rssItems = [];
+    $today = new DateTimeImmutable();
+    $client = stream_context_create([
+        'http' => ['header' => 'User-Agent: Mozilla/5.0']
+    ]);
 
-if ($data !== false) {
-    file_put_contents($target, $data);
-    echo "✅ Flöde hämtat!\n";
-} else {
-    echo "❌ Misslyckades med att hämta flöde från rss-bridge.nixnet.services\n";
-    exit(1);
-}
+    for ($i = 0; $i < 7; $i++) {
+        $date = $today->modify("-$i days")->format('Y/m/d');
+        $displayDate = $today->modify("-$i days")->format('Y-m-d');
+        $url = "https://www.gocomics.com/$comic/$date";
+
+        $html = @file_get_contents($url, false, $client);
+        if ($html === false) continue;
+
+        // Extrahera bild-URL
+        if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $matches)) {
+            $imgUrl = $matches[1];
+        } else {
+            continue;
+        }
+
+        // Bygg <entry>
+        $entry = <<<XML
+  <entry>
+    <title>{$title} – {$displa
