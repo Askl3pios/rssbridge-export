@@ -56,3 +56,4 @@ ATOM;
 // Generera båda flödena
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
+fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
