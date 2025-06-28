@@ -25,4 +25,34 @@ function fetchGoComics($comic, $title) {
         // Bygg <entry>
         $entry = <<<XML
   <entry>
-    <title>{$title} – {$displa
+    <title>{$title} – {$displayDate}</title>
+    <link href="{$url}"/>
+    <id>{$url}</id>
+    <updated>{$displayDate}T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="{$imgUrl}" alt="{$title}" />]]></content>
+  </entry>
+XML;
+
+        $rssItems[] = $entry;
+    }
+
+    $rssBody = implode("\n", $rssItems);
+
+    $rssFeed = <<<ATOM
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{$title}</title>
+  <link href="https://www.gocomics.com/{$comic}"/>
+  <updated>{$today->format('Y-m-d')}T00:00:00Z</updated>
+  <id>https://www.gocomics.com/{$comic}</id>
+  {$rssBody}
+</feed>
+ATOM;
+
+    file_put_contents(__DIR__ . "/{$comic}.xml", $rssFeed);
+    echo "✅ Genererat: {$comic}.xml\n";
+}
+
+// Generera båda flödena
+fetchGoComics('brewsterrockit', 'Brewster Rockit');
+fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
