@@ -28,3 +28,4 @@ jobs:
         git add brewsterrockit.xml
         git commit -m "Uppdaterat RSS-flöde" || echo "Inga ändringar att committa"
         git push
+        
