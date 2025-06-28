@@ -1,0 +1,30 @@
+name: Uppdatera RSS-flöde
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # Kör varje dag kl 06:00 UTC
+  workflow_dispatch:     # Tillåt manuell körning
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Klona repo
+      uses: actions/checkout@v3
+
+    - name: Sätt upp PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Hämta flöde
+      run: php fetch.php
+
+    - name: Commit och pusha ändringar
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "actions@github.com"
+        git add brewsterrockit.xml
+        git commit -m "Uppdaterat RSS-flöde" || echo "Inga ändringar att committa"
+        git push
