@@ -2,9 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Brewster Rockit</title>
   <link href="https://www.gocomics.com/brewsterrockit"/>
-  <updated>2025-06-28T00:00:00Z</updated>
+  <updated>2025-06-29T00:00:00Z</updated>
   <id>https://www.gocomics.com/brewsterrockit</id>
     <entry>
+    <title>Brewster Rockit – 2025-06-29</title>
+    <link href="https://www.gocomics.com/brewsterrockit/2025/06/29"/>
+    <id>https://www.gocomics.com/brewsterrockit/2025/06/29</id>
+    <updated>2025-06-29T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/cbf047a02cef013ea551005056a9545d" alt="Brewster Rockit" />]]></content>
+  </entry>
+  <entry>
     <title>Brewster Rockit – 2025-06-28</title>
     <link href="https://www.gocomics.com/brewsterrockit/2025/06/28"/>
     <id>https://www.gocomics.com/brewsterrockit/2025/06/28</id>
@@ -45,12 +52,5 @@
     <id>https://www.gocomics.com/brewsterrockit/2025/06/23</id>
     <updated>2025-06-23T00:00:00Z</updated>
     <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/1a80d6002cef013ea551005056a9545d" alt="Brewster Rockit" />]]></content>
-  </entry>
-  <entry>
-    <title>Brewster Rockit – 2025-06-22</title>
-    <link href="https://www.gocomics.com/brewsterrockit/2025/06/22"/>
-    <id>https://www.gocomics.com/brewsterrockit/2025/06/22</id>
-    <updated>2025-06-22T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/2bea62f0180f013ea0ef005056a9545d" alt="Brewster Rockit" />]]></content>
   </entry>
 </feed>
