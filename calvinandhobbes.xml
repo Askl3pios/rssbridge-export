@@ -1,80 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:atom="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom">
   <title>Calvin and Hobbes</title>
   <link href="https://www.gocomics.com/calvinandhobbes"/>
-  <atom:link href="https://askl3pios.github.io/rssbridge-export/calvinandhobbes.xml" rel="self" type="application/atom+xml"/>
-  <updated>2025-06-30T00:00:00Z</updated>
+  <link rel="self" href="https://askl3pios.github.io/rssbridge-export/calvinandhobbes.xml" type="application/atom+xml"/>
+  <updated>2025-06-17T08:38:09+00:00</updated>
   <id>https://www.gocomics.com/calvinandhobbes</id>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-30</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-30"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-30</id>
+    <title>Calvin and Hobbes - 2025-06-17</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/17"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/17</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-30T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/a2e10ff011d8013e9f64005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-17T08:38:09+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/911f652011d8013e9f64005056a9545d" alt="Calvin and Hobbes - 2025-06-17" />]]></content>
   </entry>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-29</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-29"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-29</id>
+    <title>Calvin and Hobbes - 2025-06-18</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/18"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/18</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-29T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/bff2f8b01758013ea0ab005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-18T08:38:08+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/93374e7011d8013e9f64005056a9545d" alt="Calvin and Hobbes - 2025-06-18" />]]></content>
   </entry>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-28</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-28"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-28</id>
+    <title>Calvin and Hobbes - 2025-06-19</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/19"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/19</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-28T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/a0d6035011d8013e9f64005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-19T08:38:08+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/7022922011a3013e9f5b005056a9545d" alt="Calvin and Hobbes - 2025-06-19" />]]></content>
   </entry>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-27</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-27"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-27</id>
+    <title>Calvin and Hobbes - 2025-06-20</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/20"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/20</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-27T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/7a9bfe5011a3013e9f5b005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-20T08:38:08+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/967392d011d8013e9f64005056a9545d" alt="Calvin and Hobbes - 2025-06-20" />]]></content>
   </entry>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-26</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-26"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-26</id>
+    <title>Calvin and Hobbes - 2025-06-21</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/21"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/21</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-26T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/789a3ed011a3013e9f5b005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-21T08:38:07+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/725c6d3011a3013e9f5b005056a9545d" alt="Calvin and Hobbes - 2025-06-21" />]]></content>
   </entry>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-25</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-25"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-25</id>
+    <title>Calvin and Hobbes - 2025-06-22</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/22"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/22</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-25T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/9c31364011d8013e9f64005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-22T08:38:07+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/ba890d001758013ea0ab005056a9545d" alt="Calvin and Hobbes - 2025-06-22" />]]></content>
   </entry>
   <entry>
-    <title>Calvin and Hobbes – 2025-06-24</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025-06-24"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025-06-24</id>
+    <title>Calvin and Hobbes - 2025-06-23</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/23"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/23</id>
     <author>
       <name>Calvin and Hobbes</name>
     </author>
-    <updated>2025-06-24T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/767a496011a3013e9f5b005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <updated>2025-06-23T08:38:07+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/7480b53011a3013e9f5b005056a9545d" alt="Calvin and Hobbes - 2025-06-23" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-24</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/24"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/24</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-24T08:38:06+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/767a496011a3013e9f5b005056a9545d" alt="Calvin and Hobbes - 2025-06-24" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-25</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/25"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/25</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-25T08:38:06+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/9c31364011d8013e9f64005056a9545d" alt="Calvin and Hobbes - 2025-06-25" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-26</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/26"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/26</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-26T08:38:06+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/789a3ed011a3013e9f5b005056a9545d" alt="Calvin and Hobbes - 2025-06-26" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-27</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/27"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/27</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-27T08:38:05+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/7a9bfe5011a3013e9f5b005056a9545d" alt="Calvin and Hobbes - 2025-06-27" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-28</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/28"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/28</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-28T08:38:05+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/a0d6035011d8013e9f64005056a9545d" alt="Calvin and Hobbes - 2025-06-28" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-29</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/29"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/29</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-29T08:38:05+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/bff2f8b01758013ea0ab005056a9545d" alt="Calvin and Hobbes - 2025-06-29" />]]></content>
+  </entry>
+  <entry>
+    <title>Calvin and Hobbes - 2025-06-30</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/30"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/30</id>
+    <author>
+      <name>Calvin and Hobbes</name>
+    </author>
+    <updated>2025-06-30T08:38:04+00:00</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/a2e10ff011d8013e9f64005056a9545d" alt="Calvin and Hobbes - 2025-06-30" />]]></content>
   </entry>
 
-<!-- Uppdaterad: 2025-06-30T08:32:05+00:00 -->
+
 </feed>
