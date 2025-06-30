@@ -1,4 +1,5 @@
 <?php
+
 function fetchGoComics($comic, $title) {
     $today = new DateTimeImmutable('now', new DateTimeZone('UTC'));
     $entries = [];
@@ -51,7 +52,9 @@ XML;
     <title>{$entry['title']}</title>
     <link href="{$entry['link']}"/>
     <id>{$entry['id']}</id>
-    <author><name>{$title}</name></author>
+    <author>
+      <name>{$title}</name>
+    </author>
     <updated>{$entry['updated']}</updated>
     <content type="html"><![CDATA[<img src="{$entry['img']}" alt="{$title}" />]]></content>
   </entry>
@@ -65,7 +68,7 @@ ENTRY;
     file_put_contents(__DIR__ . "/{$comic}.xml", $rssFeed);
 }
 
-// 👇 Lägg till dina comics här
+// Lägg till dina comics här
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
