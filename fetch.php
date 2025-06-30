@@ -1,59 +1,83 @@
 <?php
-
 function fetchGoComics($comic, $title) {
-    $rssItems = [];
-    $today = new DateTimeImmutable();
-    $client = stream_context_create([
-        'http' => ['header' => 'User-Agent: Mozilla/5.0']
-    ]);
+    $today = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+    $entries = [];
+
+    echo "\n📰 Bearbetar $comic...\n";
 
     for ($i = 0; $i < 7; $i++) {
         $date = $today->modify("-$i days")->format('Y/m/d');
-        $displayDate = $today->modify("-$i days")->format('Y-m-d');
-        $url = "https://www.gocomics.com/$comic/$date";
+        $url = "https://www.gocomics.com/{$comic}/$date";
 
-        $html = @file_get_contents($url, false, $client);
-        if ($html === false) continue;
+        echo "🔗 Hämtar $url... ";
 
-        // Extrahera bild-URL
-        if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $matches)) {
-            $imgUrl = $matches[1];
-        } else {
+        $html = @file_get_contents($url);
+        if ($html === false) {
+            echo "❌ kunde inte ladda\n";
             continue;
         }
 
-        // Bygg <entry>
-        $entry = <<<XML
-  <entry>
-    <title>{$title} – {$displayDate}</title>
-    <link href="{$url}"/>
-    <id>{$url}</id>
-    <updated>{$displayDate}T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="{$imgUrl}" alt="{$title}" />]]></content>
-  </entry>
-XML;
+        // Försök hitta bild-URL från meta-taggen
+        if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
+            $imgUrl = $match[1];
+            echo "✅ bild hittad\n";
+        } else {
+            echo "⚠️ ingen bild hittades\n";
+            continue;
+        }
 
-        $rssItems[] = $entry;
+        $entryDate = $today->modify("-$i days")->format('Y-m-d');
+        $entryLink = "https://www.gocomics.com/{$comic}/$entryDate";
+
+        $entries[] = [
+            'title' => "$title – $entryDate",
+            'link' => $entryLink,
+            'updated' => $entryDate . "T00:00:00Z",
+            'id' => $entryLink,
+            'img' => $imgUrl
+        ];
     }
 
-    $rssBody = implode("\n", $rssItems);
+    if (empty($entries)) {
+        echo "⚠️ Inga strippar hittades för $comic\n";
+        return;
+    }
 
-    $rssFeed = <<<ATOM
-<?xml version="1.0" encoding="utf-8"?>
+    // Bygg RSS-flöde (Atom-format)
+    $rssFeed = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>{$title}</title>
   <link href="https://www.gocomics.com/{$comic}"/>
-  <updated>{$today->format('Y-m-d')}T00:00:00Z</updated>
+  <updated>{$entries[0]['updated']}</updated>
   <id>https://www.gocomics.com/{$comic}</id>
-  {$rssBody}
-</feed>
-ATOM;
+
+XML;
+
+    foreach ($entries as $entry) {
+        $rssFeed .= <<<ENTRY
+  <entry>
+    <title>{$entry['title']}</title>
+    <link href="{$entry['link']}"/>
+    <id>{$entry['id']}</id>
+    <updated>{$entry['updated']}</updated>
+    <content type="html">
+      <![CDATA[<img src="{$entry['img']}" alt="{$title}" />]]>
+    </content>
+  </entry>
+
+ENTRY;
+    }
+
+    // Tvinga ändring så att git alltid känner av uppdatering
+    $rssFeed .= "\n<!-- Uppdaterad: " . date('c') . " -->\n";
+    $rssFeed .= "</feed>\n";
 
     file_put_contents(__DIR__ . "/{$comic}.xml", $rssFeed);
-    echo "✅ Genererat: {$comic}.xml\n";
+    echo "✏️ Sparade {$comic}.xml (" . strlen($rssFeed) . " bytes)\n";
 }
 
-// Generera båda flödena
+// Lägg till dina serier här:
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
