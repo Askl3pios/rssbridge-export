@@ -1,80 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:atom="http://www.w3.org/2005/Atom">
   <title>Sherman’s Lagoon</title>
   <link href="https://www.gocomics.com/shermanslagoon"/>
-  <link href="https://askl3pios.github.io/rssbridge-export/shermanslagoon.xml" rel="self" type="application/atom+xml"/>
+  <atom:link href="https://askl3pios.github.io/rssbridge-export/shermanslagoon.xml" rel="self" type="application/atom+xml"/>
   <updated>2025-06-30T00:00:00Z</updated>
   <id>https://www.gocomics.com/shermanslagoon</id>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-30</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-30"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-30</id>
-    <updated>2025-06-30T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/33fb8d403268013ea69c005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-30T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/33fb8d403268013ea69c005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-29</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-29"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-29</id>
-    <updated>2025-06-29T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/432e62901878013ea0fc005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-29T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/432e62901878013ea0fc005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-28</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-28"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-28</id>
-    <updated>2025-06-28T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/bbd31360283d013ea448005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-28T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/bbd31360283d013ea448005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-27</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-27"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-27</id>
-    <updated>2025-06-27T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/3ee47690283c013ea447005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-27T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/3ee47690283c013ea447005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-26</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-26"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-26</id>
-    <updated>2025-06-26T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/3c034b20283c013ea447005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-26T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/3c034b20283c013ea447005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-25</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-25"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-25</id>
-    <updated>2025-06-25T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/a65fcb802846013ea44e005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-25T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/a65fcb802846013ea44e005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
   <entry>
     <title>Sherman’s Lagoon – 2025-06-24</title>
     <link href="https://www.gocomics.com/shermanslagoon/2025-06-24"/>
     <id>https://www.gocomics.com/shermanslagoon/2025-06-24</id>
-    <updated>2025-06-24T00:00:00Z</updated>
     <author><name>Sherman’s Lagoon</name></author>
-    <content type="html">
-      <![CDATA[<img src="https://featureassets.gocomics.com/assets/149e3070283f013ea449005056a9545d" alt="Sherman’s Lagoon" />]]>
-    </content>
+    <updated>2025-06-24T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/149e3070283f013ea449005056a9545d" alt="Sherman’s Lagoon" />]]></content>
   </entry>
 
-<!-- Uppdaterad: 2025-06-30T08:14:40+00:00 -->
+<!-- Uppdaterad: 2025-06-30T08:22:22+00:00 -->
 </feed>
