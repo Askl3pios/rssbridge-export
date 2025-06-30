@@ -46,10 +46,19 @@ function fetchGoComics($comic, $title) {
             continue; // Hoppa över om URL inte kan nås
         }
 
-        // Försök att extrahera bild-URL från og:image meta-taggen
-        if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
-            $imgUrl = $match[1];
+        $imgUrl = null;
 
+        // FÖRST: Försök hitta bilden via den mer tillförlitliga strukturen (comic__image div)
+        // Detta mönster fångar <img> src inuti en <picture> tagg som är inuti en div.comic__image
+        if (preg_match('/<picture class="item-comic-image">\s*<source[^>]*>\s*<img src="([^"]+)"[^>]*>/', $html, $match)) {
+             $imgUrl = $match[1];
+        }
+        // ANNARS: Försök hitta bilden via den gamla og:image meta-taggen (fallback)
+        else if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
+            $imgUrl = $match[1];
+        }
+
+        if ($imgUrl) { // Om en bild-URL hittades
             $entryLink = "https://www.gocomics.com/{$comic}/$datePath"; // Länk till dagens seriestrip
             $entryId = $entryLink; // Unikt ID för posten (baserat på datum-URL)
 
@@ -69,7 +78,7 @@ function fetchGoComics($comic, $title) {
                 'img' => htmlspecialchars($imgUrl) // HTML-escapa bild-URL
             ];
         } else {
-            // error_log("Kunde inte hitta og:image för $url"); // Avkommentera för felsökning
+            // error_log("Kunde inte hitta bild-URL för $url"); // Avkommentera för felsökning
         }
     }
 
@@ -159,7 +168,7 @@ XML;
 
 // --- Lägg till dina serier här ---
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
-fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
+fetchGoComics('shermanslagoon', 'Shervin's Lagoon'); 
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
 
 ?>
