@@ -3,7 +3,7 @@ name: Uppdatera RSS-flöde
 on:
   workflow_dispatch:     # Gör att du kan köra det manuellt
   schedule:
-  - cron: "0 6,12 * * *"
+    - cron: "0 6,12 * * *"  # Kör kl. 06:00 och 12:00 UTC varje dag
 
 jobs:
   build:
@@ -18,15 +18,17 @@ jobs:
       with:
         php-version: '8.2'
 
-    - name: Hämta flöde
+    - name: Hämta flöden
       run: php fetch.php
-      
+
     - name: Commit och pusha ändringar
       run: |
         git config --global user.name "github-actions"
         git config --global user.email "actions@github.com"
-        git add .
-        git commit -m "Uppdaterat RSS-flöden" || echo "Inga ändringar att committa"
-        git push
-
-        
+        git add -A
+        if ! git diff --cached --quiet; then
+          git commit -m "Tvingad uppdatering av RSS-flöden"
+          git push
+        else
+          echo "Inga ändringar att committa"
+        fi
