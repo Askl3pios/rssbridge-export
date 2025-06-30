@@ -16,9 +16,12 @@ function fetchGoComics($comic, $title) {
 
     // Försök att ladda befintliga poster från XML-filen för att undvika dubbletter
     if (file_exists($filePath)) {
+        // Suppress errors for malformed XML files with '@'
         $xml = @simplexml_load_file($filePath);
         if ($xml !== false) {
-            foreach ($xml->entry as $entry) {
+            // Namespace-hantering för Atom-flöden
+            $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
+            foreach ($xml->xpath('//atom:entry') as $entry) {
                 $existingEntries[(string)$entry->id] = true;
             }
         }
@@ -28,8 +31,11 @@ function fetchGoComics($comic, $title) {
     $processedImageUrls = []; // För att hantera fallet där GoComics visar samma bild flera dagar i rad
 
     // Iterera bakåt i tiden för att hitta de senaste serierna (upp till 14 dagar för att vara säker)
+    // Starta från dagens datum och gå bakåt
+    $currentDate = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+
     for ($i = 0; $i < 14; $i++) {
-        $dateObj = (new DateTimeImmutable('now', new DateTimeZone('UTC')))->modify("-$i days");
+        $dateObj = $currentDate->modify("-$i days");
         $datePath = $dateObj->format('Y/m/d'); // Format för URL: 2023/10/26
         $entryDate = $dateObj->format('Y-m-d'); // Format för intern användning och ID
 
@@ -37,9 +43,8 @@ function fetchGoComics($comic, $title) {
         $html = @file_get_contents($url);
 
         if ($html === false) {
-            // Logga felet men fortsätt
             // error_log("Kunde inte hämta URL: $url");
-            continue;
+            continue; // Hoppa över om URL inte kan nås
         }
 
         // Försök att extrahera bild-URL från og:image meta-taggen
@@ -49,7 +54,7 @@ function fetchGoComics($comic, $title) {
             // Vissa serier kan visa samma bild under flera dagar om det inte finns någon ny
             // Vi vill bara inkludera unika bilder
             if (isset($processedImageUrls[$imgUrl])) {
-                continue; // Har redan hanterat denna bild
+                continue; // Har redan hanterat denna bild i denna körning
             }
             $processedImageUrls[$imgUrl] = true;
 
@@ -78,10 +83,9 @@ function fetchGoComics($comic, $title) {
     // Vänd arrayen så de nyaste serierna kommer först (viktigt för RSS/Atom)
     $newEntries = array_reverse($newEntries);
 
-    // Om inga nya poster hittades, gör inget
+    // Om inga nya poster hittades, och ingen fil existerar, skapa en tom feed-struktur.
+    // Annars, om inga nya poster hittas och filen existerar, gör inget.
     if (empty($newEntries)) {
-        // Om filen inte existerar och inga nya poster hittades, skriv en tom feed-struktur
-        // Annars, rör inte den befintliga filen
         if (!file_exists($filePath)) {
             $rssFeed = createAtomFeedHeader($comic, $title, date(DateTime::ATOM));
             $rssFeed .= "</feed>\n";
@@ -91,14 +95,23 @@ function fetchGoComics($comic, $title) {
     }
 
     // Läs in befintligt flöde för att lägga till nya poster i början
-    $currentFeedContent = file_exists($filePath) ? file_get_contents($filePath) : '';
-    $existingFeedBody = '';
+    // Vi vill bara behålla det som är INNE I <feed> men inte header/footer
+    $existingFeedEntries = '';
+    if (file_exists($filePath)) {
+        $currentFeedContent = file_get_contents($filePath);
+        // Hitta positionen för första och sista <entry> taggen
+        $startPos = strpos($currentFeedContent, '<entry>');
+        $endPos = strrpos($currentFeedContent, '</entry>');
 
-    // Hitta var 'feed'-taggen slutar för att infoga nya poster
-    if (str_contains($currentFeedContent, '</feed>')) {
-        $existingFeedBody = substr($currentFeedContent, strpos($currentFeedContent, '<entry>'));
-        $existingFeedBody = substr($existingFeedBody, 0, strrpos($existingFeedContent, '</feed>'));
+        if ($startPos !== false && $endPos !== false) {
+            $existingFeedEntries = substr($currentFeedContent, $startPos, $endPos - $startPos + strlen('</entry>'));
+            // Ta bort den sista </feed> taggen om den redan finns
+            if (str_contains($existingFeedEntries, '</feed>')) { // Requires PHP 8+
+                $existingFeedEntries = substr($existingFeedEntries, 0, strrpos($existingFeedEntries, '</feed>'));
+            }
+        }
     }
+
 
     // Skapa headern för Atom-flödet
     $latestUpdate = $newEntries[0]['updated']; // Senaste postens datum för flödets uppdateringsdatum
@@ -111,10 +124,10 @@ function fetchGoComics($comic, $title) {
     <title>{$entry['title']}</title>
     <link href="{$entry['link']}"/>
     <id>{$entry['id']}</id>
-    <author>
-      <name>{$title}</name>
-    </author>
     <updated>{$entry['updated']}</updated>
+    <author>
+      <name>{$entry['title']}</name>
+    </author>
     <content type="html"><![CDATA[<img src="{$entry['img']}" alt="{$entry['title']}" />]]></content>
   </entry>
 
@@ -122,7 +135,7 @@ ENTRY;
     }
 
     // Lägg till de befintliga posterna efter de nya
-    $rssFeed .= $existingFeedBody;
+    $rssFeed .= $existingFeedEntries;
 
     // Avsluta flödet
     $rssFeed .= "\n\n";
@@ -139,6 +152,7 @@ function createAtomFeedHeader($comic, $title, $updatedDate) {
     // HTML-escapa titeln och comic-slugen för att vara säker i XML
     $escapedTitle = htmlspecialchars($title);
     $escapedComic = htmlspecialchars($comic);
+    // Din GitHub Pages URL för self-länken
     $selfLink = htmlspecialchars("https://askl3pios.github.io/rssbridge-export/{$comic}.xml");
     $gocomicsLink = htmlspecialchars("https://www.gocomics.com/{$comic}");
 
@@ -146,8 +160,8 @@ function createAtomFeedHeader($comic, $title, $updatedDate) {
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>{$escapedTitle}</title>
-  <link href="{$gocomicsLink}"/>
-  <link rel="self" href="{$selfLink}" type="application/atom+xml"/>
+  <link href="{$gocomicsLink}" />
+  <link rel="self" href="{$selfLink}" type="application/atom+xml" />
   <updated>{$updatedDate}</updated>
   <id>{$gocomicsLink}</id>
 
