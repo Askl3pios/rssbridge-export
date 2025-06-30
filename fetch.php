@@ -54,10 +54,10 @@ function fetchGoComics($comic, $title) {
 
     $rssFeed = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:atom="http://www.w3.org/2005/Atom">
   <title>{$title}</title>
   <link href="https://www.gocomics.com/{$comic}"/>
-  <link href="https://askl3pios.github.io/rssbridge-export/{$comic}.xml" rel="self" type="application/atom+xml"/>
+  <atom:link href="https://askl3pios.github.io/rssbridge-export/{$comic}.xml" rel="self" type="application/atom+xml"/>
   <updated>{$entries[0]['updated']}</updated>
   <id>https://www.gocomics.com/{$comic}</id>
 
@@ -69,11 +69,9 @@ XML;
     <title>{$entry['title']}</title>
     <link href="{$entry['link']}"/>
     <id>{$entry['id']}</id>
-    <updated>{$entry['updated']}</updated>
     <author><name>{$title}</name></author>
-    <content type="html">
-      <![CDATA[<img src="{$entry['img']}" alt="{$title}" />]]>
-    </content>
+    <updated>{$entry['updated']}</updated>
+    <content type="html"><![CDATA[<img src="{$entry['img']}" alt="{$title}" />]]></content>
   </entry>
 
 ENTRY;
@@ -86,7 +84,7 @@ ENTRY;
     echo "✏️ Sparade {$comic}.xml (" . strlen($rssFeed) . " bytes)\n";
 }
 
-// 📝 Lägg till fler comics här:
+// 📝 Lägg till serier här
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
