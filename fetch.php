@@ -79,4 +79,13 @@ XML;
 ENTRY;
     }
 
-    $rss
+    $rssFeed .= "\n<!-- Uppdaterad: " . date('c') . " -->\n";
+    $rssFeed .= "</feed>\n";
+
+    file_put_contents(__DIR__ . "/{$comic}.xml", $rssFeed);
+    echo "✏️ Sparade {$comic}.xml (" . strlen($rssFeed) . " bytes)\n";
+}
+
+// 🎯 Lägg till dina serier här:
+fetchGoComics('brewsterrockit', 'Brewster Rockit');
+fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
