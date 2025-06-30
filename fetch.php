@@ -52,7 +52,7 @@ function fetchGoComics($comic, $title) {
         return;
     }
 
-$rssFeed = <<<XML
+    $rssFeed = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>{$title}</title>
@@ -64,7 +64,7 @@ $rssFeed = <<<XML
 XML;
 
     foreach ($entries as $entry) {
-$rssFeed .= <<<ENTRY
+        $rssFeed .= <<<ENTRY
   <entry>
     <title>{$entry['title']}</title>
     <link href="{$entry['link']}"/>
@@ -86,6 +86,7 @@ ENTRY;
     echo "✏️ Sparade {$comic}.xml (" . strlen($rssFeed) . " bytes)\n";
 }
 
-// Lägg till serier här
+// 📝 Lägg till fler comics här:
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
-fetchGoComic
+fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
+fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
