@@ -2,14 +2,21 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Calvin and Hobbes</title>
   <link href="https://www.gocomics.com/calvinandhobbes"/>
-  <updated>2025-06-29T00:00:00Z</updated>
+  <updated>2025-06-30T00:00:00Z</updated>
   <id>https://www.gocomics.com/calvinandhobbes</id>
     <entry>
+    <title>Calvin and Hobbes – 2025-06-30</title>
+    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/30"/>
+    <id>https://www.gocomics.com/calvinandhobbes/2025/06/30</id>
+    <updated>2025-06-30T00:00:00Z</updated>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/bff2f8b01758013ea0ab005056a9545d" alt="Calvin and Hobbes" />]]></content>
+  </entry>
+  <entry>
     <title>Calvin and Hobbes – 2025-06-29</title>
     <link href="https://www.gocomics.com/calvinandhobbes/2025/06/29"/>
     <id>https://www.gocomics.com/calvinandhobbes/2025/06/29</id>
     <updated>2025-06-29T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/a0d6035011d8013e9f64005056a9545d" alt="Calvin and Hobbes" />]]></content>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/bff2f8b01758013ea0ab005056a9545d" alt="Calvin and Hobbes" />]]></content>
   </entry>
   <entry>
     <title>Calvin and Hobbes – 2025-06-28</title>
@@ -45,12 +52,5 @@
     <id>https://www.gocomics.com/calvinandhobbes/2025/06/24</id>
     <updated>2025-06-24T00:00:00Z</updated>
     <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/767a496011a3013e9f5b005056a9545d" alt="Calvin and Hobbes" />]]></content>
-  </entry>
-  <entry>
-    <title>Calvin and Hobbes – 2025-06-23</title>
-    <link href="https://www.gocomics.com/calvinandhobbes/2025/06/23"/>
-    <id>https://www.gocomics.com/calvinandhobbes/2025/06/23</id>
-    <updated>2025-06-23T00:00:00Z</updated>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/7480b53011a3013e9f5b005056a9545d" alt="Calvin and Hobbes" />]]></content>
   </entry>
 </feed>
