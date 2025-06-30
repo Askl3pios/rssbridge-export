@@ -5,8 +5,12 @@ function fetchGoComics($comic, $title) {
 
     echo "\n📰 Bearbetar $comic...\n";
 
+    $previousImg = null;
+
     for ($i = 0; $i < 7; $i++) {
-        $date = $today->modify("-$i days")->format('Y/m/d');
+        $dateObj = $today->modify("-$i days");
+        $date = $dateObj->format('Y/m/d');
+        $entryDate = $dateObj->format('Y-m-d');
         $url = "https://www.gocomics.com/{$comic}/$date";
 
         echo "🔗 Hämtar $url... ";
@@ -17,16 +21,22 @@ function fetchGoComics($comic, $title) {
             continue;
         }
 
-        // Försök hitta bild-URL från meta-taggen
         if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
             $imgUrl = $match[1];
+
+            // Om dagens bild är samma som gårdagens → hoppa över
+            if ($i === 0 && isset($previousImg) && $imgUrl === $previousImg) {
+                echo "⚠️ Dagens bild är samma som gårdagens – hoppar över\n";
+                continue;
+            }
+
+            $previousImg = $imgUrl;
             echo "✅ bild hittad\n";
         } else {
             echo "⚠️ ingen bild hittades\n";
             continue;
         }
 
-        $entryDate = $today->modify("-$i days")->format('Y-m-d');
         $entryLink = "https://www.gocomics.com/{$comic}/$entryDate";
 
         $entries[] = [
@@ -39,11 +49,11 @@ function fetchGoComics($comic, $title) {
     }
 
     if (empty($entries)) {
-        echo "⚠️ Inga strippar hittades för $comic\n";
+        echo "⚠️ Inga strippar att spara för $comic\n";
         return;
     }
 
-    // Bygg RSS-flöde (Atom-format)
+    // Generera Atom-flöde
     $rssFeed = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -62,22 +72,4 @@ XML;
     <id>{$entry['id']}</id>
     <updated>{$entry['updated']}</updated>
     <content type="html">
-      <![CDATA[<img src="{$entry['img']}" alt="{$title}" />]]>
-    </content>
-  </entry>
-
-ENTRY;
-    }
-
-    // Tvinga ändring så att git alltid känner av uppdatering
-    $rssFeed .= "\n<!-- Uppdaterad: " . date('c') . " -->\n";
-    $rssFeed .= "</feed>\n";
-
-    file_put_contents(__DIR__ . "/{$comic}.xml", $rssFeed);
-    echo "✏️ Sparade {$comic}.xml (" . strlen($rssFeed) . " bytes)\n";
-}
-
-// Lägg till dina serier här:
-fetchGoComics('brewsterrockit', 'Brewster Rockit');
-fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
-fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
+      <![CDATA[<img src="{$ent]()]()
