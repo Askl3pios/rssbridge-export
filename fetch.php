@@ -168,7 +168,7 @@ XML;
 
 // --- Lägg till dina serier här ---
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
-fetchGoComics('shermanslagoon', 'Shervin's Lagoon'); 
+fetchGoComics('shermanslagoon', "Sherman's Lagoon"); 
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
 
 ?>
