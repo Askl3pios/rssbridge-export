@@ -72,4 +72,11 @@ XML;
     <id>{$entry['id']}</id>
     <updated>{$entry['updated']}</updated>
     <content type="html">
-      <![CDATA[<img src="{$ent]()]()
+      <![CDATA[<img src="{$entry['img']}" alt="{$title}" />]]>
+    </content>
+  </entry>
+
+ENTRY;
+    }
+
+    $rss
