@@ -2,9 +2,6 @@
 function fetchGoComics($comic, $title) {
     $today = new DateTimeImmutable('now', new DateTimeZone('UTC'));
     $entries = [];
-
-    echo "\n📰 Bearbetar $comic...\n";
-
     $previousImg = null;
 
     for ($i = 0; $i < 7; $i++) {
@@ -13,26 +10,14 @@ function fetchGoComics($comic, $title) {
         $entryDate = $dateObj->format('Y-m-d');
         $url = "https://www.gocomics.com/{$comic}/$date";
 
-        echo "🔗 Hämtar $url... ";
-
         $html = @file_get_contents($url);
-        if ($html === false) {
-            echo "❌ kunde inte ladda\n";
-            continue;
-        }
+        if ($html === false) continue;
 
         if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
             $imgUrl = $match[1];
-
-            if ($i === 0 && isset($previousImg) && $imgUrl === $previousImg) {
-                echo "⚠️ Dagens bild är samma som gårdagens – hoppar över\n";
-                continue;
-            }
-
+            if ($i === 0 && $imgUrl === $previousImg) continue;
             $previousImg = $imgUrl;
-            echo "✅ bild hittad\n";
         } else {
-            echo "⚠️ ingen bild hittades\n";
             continue;
         }
 
@@ -47,10 +32,7 @@ function fetchGoComics($comic, $title) {
         ];
     }
 
-    if (empty($entries)) {
-        echo "⚠️ Inga strippar att spara för $comic\n";
-        return;
-    }
+    if (empty($entries)) return;
 
     $rssFeed = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -81,10 +63,9 @@ ENTRY;
     $rssFeed .= "</feed>\n";
 
     file_put_contents(__DIR__ . "/{$comic}.xml", $rssFeed);
-    echo "✏️ Sparade {$comic}.xml (" . strlen($rssFeed) . " bytes)\n";
 }
 
-// 📝 Lägg till serier här
+// 👇 Lägg till dina comics här
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', 'Sherman’s Lagoon');
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
