@@ -51,14 +51,9 @@ function fetchGoComics($comic, $title) {
             $entryLink = "https://www.gocomics.com/{$comic}/$datePath";
             $entryId = $entryLink;
 
-            // *** ÄNDRING FÖR FELSÖKNING: LÄGG ALLTID TILL NYA POSTER FÖR DENNA KÖRNING ***
-            // Vi kommer att filtrera bort verkliga dubbletter i slutet genom att bygga om flödet.
-            // Om du vill se om bilderna är korrekta, vill vi inte avbryta loopen i förtid.
-            // Denna "if-sats" och "continue;" är intakt från tidigare, men "break;" är borta.
-            // Detta garanterar att nya poster *alltid* läggs till i $newEntries om de hittas.
             if (isset($existingEntries[$entryId])) {
                 // Denna post finns redan, men vi fortsätter skrapa bakåt för att hitta ALLA de senaste.
-                // Vi kommer att hantera sammanslagningen senare för att undvika att lägga till gamla poster i flödet igen.
+                // Vi hanterar sammanslagningen i slutet för att undvika att lägga till gamla poster i flödet igen.
             }
 
             $newEntries[] = [
@@ -74,11 +69,11 @@ function fetchGoComics($comic, $title) {
     // Vänd arrayen så de nyaste serierna kommer först
     $newEntries = array_reverse($newEntries);
 
-    // FILTRERA BORT VERKLIGA DUBBLETTER: Skapa en unik lista av alla poster
+    // Filtrera bort verkliga dubbletter och samla alla poster (nya och gamla) i en unik och sorterad lista
     $finalEntries = [];
     $seenIds = [];
 
-    // Lägg till de nya posterna först (som vi just skrapade)
+    // Lägg till de nya posterna först
     foreach ($newEntries as $entry) {
         if (!isset($seenIds[$entry['id']])) {
             $finalEntries[] = $entry;
@@ -86,7 +81,7 @@ function fetchGoComics($comic, $title) {
         }
     }
 
-    // Lägg till befintliga poster om de inte redan är med (dvs. äldre poster)
+    // Lägg till befintliga poster som inte redan lagts till
     if (file_exists($filePath)) {
         $xml = @simplexml_load_file($filePath);
         if ($xml !== false) {
@@ -94,13 +89,12 @@ function fetchGoComics($comic, $title) {
             foreach ($xml->xpath('//atom:entry') as $entry) {
                 $entryId = (string)$entry->id;
                 if (!isset($seenIds[$entryId])) {
-                    // Återskapa entry-strukturen från den gamla filen
                     $finalEntries[] = [
                         'title' => (string)$entry->title,
                         'link' => (string)$entry->link,
                         'updated' => (string)$entry->updated,
                         'id' => (string)$entry->id,
-                        'img' => (string)$entry->xpath('atom:content/@src')[0] ?? '' // Extrahera bild från content
+                        'img' => (string)$entry->xpath('atom:content/@src')[0] ?? ''
                     ];
                     $seenIds[$entryId] = true;
                 }
@@ -114,23 +108,22 @@ function fetchGoComics($comic, $title) {
     });
 
 
-    // Om inga poster alls hittades efter filtrering, skriv en tom feed-struktur
+    // Om inga poster alls hittades, skriv en tom feed-struktur (om filen inte fanns initialt)
     if (empty($finalEntries)) {
-        if (!file_exists($filePath)) { // Bara om filen inte fanns alls initialt
+        if (!file_exists($filePath)) {
             $rssFeed = createAtomFeedHeader($comic, $title, date(DateTime::ATOM));
             $rssFeed .= "</feed>\n";
             file_put_contents($filePath, $rssFeed);
         }
-        return; // Avsluta om inga poster finns att skriva
+        return;
     }
 
     // Skapa headern för Atom-flödet
-    $latestUpdate = $finalEntries[0]['updated']; // Senaste postens datum för flödets uppdateringsdatum
+    $latestUpdate = $finalEntries[0]['updated'];
     $rssFeed = createAtomFeedHeader($comic, $title, $latestUpdate);
 
     // Lägg till de slutgiltiga, unika och sorterade posterna
     foreach ($finalEntries as $entry) {
-        // Säkerställ att bild-URL finns innan den används
         $imgTag = '';
         if (!empty($entry['img'])) {
             $imgTag = '<img src="' . htmlspecialchars($entry['img']) . '" alt="' . htmlspecialchars($entry['title']) . '" />';
@@ -151,8 +144,8 @@ function fetchGoComics($comic, $title) {
 ENTRY;
     }
 
-    // Avsluta flödet
-    $rssFeed .= "\n\n";
+    // Avsluta flödet (denna del har korrigerats)
+    $rssFeed .= "\n\n"; // Korrigerad rad
     $rssFeed .= "</feed>\n";
 
     // Skriv till fil
