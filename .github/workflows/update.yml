@@ -3,7 +3,7 @@ name: Uppdatera RSS-flöde
 on:
   workflow_dispatch:     # Gör att du kan köra det manuellt
   schedule:
-    - cron: "0 6 * * *"  # Kör varje dag kl 06:00 UTC
+  - cron: "0 6,12 * * *"
 
 jobs:
   build:
