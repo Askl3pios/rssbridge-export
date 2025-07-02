@@ -32,10 +32,17 @@ function fetchGoComics($comic, $title) {
         $entryDate = $dateObj->format('Y-m-d');
 
         $url = "https://www.gocomics.com/{$comic}/$datePath";
-        $html = @file_get_contents($url);
+        // Använd stream_context_create för att sätta en timeout och undvika att skriptet hänger
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 10 // 10 sekunders timeout
+            ]
+        ]);
+        $html = @file_get_contents($url, false, $context);
 
-        if ($html === false) {
-            continue;
+        if ($html === false || empty($html)) {
+            // error_log("Kunde inte hämta HTML för $url"); // För felsökning
+            continue; // Hoppa över om URL inte kan nås eller om HTML är tom
         }
 
         $imgUrl = null;
@@ -48,10 +55,19 @@ function fetchGoComics($comic, $title) {
         else if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
             $imgUrl = $match[1];
         }
-        // TREDJE: Mer generell sökning efter img-taggar med specifik src-struktur och klass
+        // TREDJE: Mer generell sökning efter img-taggar med specifik src-struktur och klass (från förra gången)
         else if (preg_match('/<img[^>]*src="([^"]+\/comics\/[^"]+)"[^>]*class="[^"]*comic-book-image[^"]*"[^>]*>/', $html, $match)) {
             $imgUrl = $match[1];
         }
+        // FJÄRDE: NY - Sök efter featureassets.gocomics.com/assets/ med base64-ish-hash (används nu för 1 & 2 juli)
+        else if (preg_match('/<img[^>]*src="(https:\/\/featureassets\.gocomics\.com\/assets\/[a-f0-9]+)"[^>]*>/', $html, $match)) {
+            $imgUrl = $match[1];
+        }
+        // FEMTE: NY - Sök efter en mer generell img-tag med assets.amuniversal.com (också vanlig)
+        else if (preg_match('/<img[^>]*src="(https:\/\/assets\.amuniversal\.com\/[a-f0-9]+)"[^>]*>/', $html, $match)) {
+            $imgUrl = $match[1];
+        }
+
 
         if ($imgUrl) {
             $entryLink = "https://www.gocomics.com/{$comic}/$datePath";
@@ -69,6 +85,9 @@ function fetchGoComics($comic, $title) {
                 'id' => htmlspecialchars($entryId),
                 'img' => htmlspecialchars($imgUrl)
             ];
+        } else {
+            // error_log("Kunde inte hitta bild-URL för $url för serie $title"); // Avkommentera för felsökning
+            // Om ingen bild hittades, inkludera inte denna post för att undvika tomma poster.
         }
     }
 
@@ -100,7 +119,6 @@ function fetchGoComics($comic, $title) {
                         'link' => (string)$entry->link,
                         'updated' => (string)$entry->updated,
                         'id' => (string)$entry->id,
-                        // Extrahera bild från content-taggen om den finns där
                         'img' => (string)($entry->content->xpath('img/@src')[0] ?? '')
                     ];
                     $seenIds[$entryId] = true;
