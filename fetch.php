@@ -40,10 +40,16 @@ function fetchGoComics($comic, $title) {
 
         $imgUrl = null;
 
+        // FÖRST: Försök hitta bilden via den mest specifika strukturen (<picture class="item-comic-image">)
         if (preg_match('/<picture class="item-comic-image">\s*<source[^>]*>\s*<img src="([^"]+)"[^>]*>/', $html, $match)) {
              $imgUrl = $match[1];
         }
+        // ANDRA: Fallback till og:image meta-taggen
         else if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
+            $imgUrl = $match[1];
+        }
+        // TREDJE: Mer generell sökning efter img-taggar med specifik src-struktur och klass
+        else if (preg_match('/<img[^>]*src="([^"]+\/comics\/[^"]+)"[^>]*class="[^"]*comic-book-image[^"]*"[^>]*>/', $html, $match)) {
             $imgUrl = $match[1];
         }
 
@@ -94,7 +100,8 @@ function fetchGoComics($comic, $title) {
                         'link' => (string)$entry->link,
                         'updated' => (string)$entry->updated,
                         'id' => (string)$entry->id,
-                        'img' => (string)$entry->xpath('atom:content/@src')[0] ?? ''
+                        // Extrahera bild från content-taggen om den finns där
+                        'img' => (string)($entry->content->xpath('img/@src')[0] ?? '')
                     ];
                     $seenIds[$entryId] = true;
                 }
@@ -144,8 +151,8 @@ function fetchGoComics($comic, $title) {
 ENTRY;
     }
 
-    // Avsluta flödet (denna del har korrigerats)
-    $rssFeed .= "\n\n"; // Korrigerad rad
+    // Avsluta flödet
+    $rssFeed .= "\n\n";
     $rssFeed .= "</feed>\n";
 
     // Skriv till fil
