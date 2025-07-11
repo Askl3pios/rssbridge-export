@@ -3,8 +3,18 @@
   <title>Brewster Rockit</title>
   <link href="https://www.gocomics.com/brewsterrockit" />
   <link rel="self" href="https://askl3pios.github.io/rssbridge-export/brewsterrockit.xml" type="application/atom+xml" />
-  <updated>2025-07-10T23:35:39+00:00</updated>
+  <updated>2025-07-11T23:35:39+00:00</updated>
   <id>https://www.gocomics.com/brewsterrockit</id>
+  <entry>
+    <title>Brewster Rockit - 2025-07-11</title>
+    <link href="https://www.gocomics.com/brewsterrockit/2025/07/11"/>
+    <id>https://www.gocomics.com/brewsterrockit/2025/07/11</id>
+    <updated>2025-07-11T23:35:39+00:00</updated>
+    <author>
+      <name>Brewster Rockit</name>
+    </author>
+    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/3bb8384037f2013ea7ef005056a9545d" alt="Brewster Rockit - 2025-07-11" />]]></content>
+  </entry>
   <entry>
     <title>Brewster Rockit - 2025-07-10</title>
     <link href="https://www.gocomics.com/brewsterrockit/2025/07/10"/>
@@ -137,13 +147,13 @@
   </entry>
   <entry>
     <title>Brewster Rockit - 2025-06-27</title>
-    <link href="https://www.gocomics.com/brewsterrockit/2025/06/27"/>
+    <link href=""/>
     <id>https://www.gocomics.com/brewsterrockit/2025/06/27</id>
     <updated>2025-06-27T23:35:39+00:00</updated>
     <author>
       <name>Brewster Rockit</name>
     </author>
-    <content type="html"><![CDATA[<img src="https://featureassets.gocomics.com/assets/36ac2f502cec013ea54f005056a9545d" alt="Brewster Rockit - 2025-06-27" />]]></content>
+    <content type="html"><![CDATA[]]></content>
   </entry>
   <entry>
     <title>Brewster Rockit - 2025-06-26</title>
