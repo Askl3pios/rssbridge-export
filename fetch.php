@@ -1,6 +1,7 @@
 <?php
 
 date_default_timezone_set('UTC');
+ini_set('display_errors', '1');
 ini_set('log_errors', '1');
 ini_set('error_log', 'php://stderr');
 
@@ -120,7 +121,7 @@ function fetchHtml($url) {
     ]);
 
     $html = @file_get_contents($url, false, $context);
-    $status = extractHttpStatus($http_response_header ?? []);
+    $status = extractHttpStatus(isset($http_response_header) ? $http_response_header : []);
 
     if ($html === false || trim($html) === '') {
         return [
@@ -150,6 +151,11 @@ function extractHttpStatus($responseHeaders) {
 }
 
 function extractComicImageUrl($html) {
+    if (!class_exists('DOMDocument')) {
+        logMessage('ERROR', 'DOMDocument saknas i PHP-miljön');
+        return extractComicImageUrlWithRegex($html);
+    }
+
     libxml_use_internal_errors(true);
 
     $dom = new DOMDocument();
@@ -183,6 +189,27 @@ function extractComicImageUrl($html) {
 
             $value = html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
+            if (isValidComicImageUrl($value)) {
+                return $value;
+            }
+        }
+    }
+
+    return extractComicImageUrlWithRegex($html);
+}
+
+function extractComicImageUrlWithRegex($html) {
+    $patterns = [
+        '/<img[^>]+src="(https:\/\/featureassets\.gocomics\.com\/assets\/[^"]+)"/i',
+        '/<img[^>]+data-src="(https:\/\/featureassets\.gocomics\.com\/assets\/[^"]+)"/i',
+        '/<img[^>]+src="(https:\/\/assets\.amuniversal\.com\/[^"]+)"/i',
+        '/<img[^>]+data-src="(https:\/\/assets\.amuniversal\.com\/[^"]+)"/i',
+        '/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i'
+    ];
+
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $html, $match)) {
+            $value = html_entity_decode(trim($match[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
             if (isValidComicImageUrl($value)) {
                 return $value;
             }
@@ -286,245 +313,3 @@ XML;
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', "Sherman's Lagoon");
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
-
-?><?php
-
-date_default_timezone_set('UTC');
-
-function fetchGoComics($comic, $title) {
-    $filePath = __DIR__ . "/{$comic}.xml";
-    $existingEntries = loadExistingEntries($filePath);
-
-    $newEntries = [];
-    $currentDate = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-
-    for ($i = 0; $i < 14; $i++) {
-        $dateObj = $currentDate->modify("-{$i} days");
-        $datePath = $dateObj->format('Y/m/d');
-        $entryDate = $dateObj->format('Y-m-d');
-        $entryLink = "https://www.gocomics.com/{$comic}/{$datePath}";
-        $entryId = $entryLink;
-
-        $html = fetchHtml($entryLink);
-        if ($html === null) {
-            continue;
-        }
-
-        $imgUrl = extractComicImageUrl($html);
-
-        if (!$imgUrl) {
-            continue;
-        }
-
-        $newEntries[] = [
-            'title' => htmlspecialchars("{$title} - {$entryDate}", ENT_QUOTES | ENT_XML1, 'UTF-8'),
-            'link' => htmlspecialchars($entryLink, ENT_QUOTES | ENT_XML1, 'UTF-8'),
-            'updated' => $dateObj->format(DateTime::ATOM),
-            'id' => htmlspecialchars($entryId, ENT_QUOTES | ENT_XML1, 'UTF-8'),
-            'img' => htmlspecialchars($imgUrl, ENT_QUOTES | ENT_XML1, 'UTF-8')
-        ];
-    }
-
-    $finalEntries = mergeEntries($newEntries, $existingEntries);
-
-    if (empty($finalEntries)) {
-        if (!file_exists($filePath)) {
-            $feed = createAtomFeedHeader($comic, $title, date(DateTime::ATOM));
-            $feed .= "</feed>\n";
-            file_put_contents($filePath, $feed);
-        }
-        return;
-    }
-
-    usort($finalEntries, function ($a, $b) {
-        return strtotime($b['updated']) <=> strtotime($a['updated']);
-    });
-
-    $latestUpdate = $finalEntries[0]['updated'];
-    $feed = createAtomFeedHeader($comic, $title, $latestUpdate);
-
-    foreach ($finalEntries as $entry) {
-        $imgTag = '';
-        if (!empty($entry['img'])) {
-            $imgTag = '<img src="' . $entry['img'] . '" alt="' . $entry['title'] . '" />';
-        }
-
-        $feed .= <<<ENTRY
-  <entry>
-    <title>{$entry['title']}</title>
-    <link href="{$entry['link']}"/>
-    <id>{$entry['id']}</id>
-    <updated>{$entry['updated']}</updated>
-    <author>
-      <name>{$title}</name>
-    </author>
-    <content type="html"><![CDATA[{$imgTag}]]></content>
-  </entry>
-
-ENTRY;
-    }
-
-    $feed .= "</feed>\n";
-    file_put_contents($filePath, $feed);
-}
-
-function fetchHtml($url) {
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'GET',
-            'timeout' => 20,
-            'ignore_errors' => true,
-            'header' => implode("\r\n", [
-                'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Accept-Language: en-US,en;q=0.9',
-                'Cache-Control: no-cache',
-                'Pragma: no-cache'
-            ])
-        ]
-    ]);
-
-    $html = @file_get_contents($url, false, $context);
-
-    if ($html === false || trim($html) === '') {
-        return null;
-    }
-
-    return $html;
-}
-
-function extractComicImageUrl($html) {
-    libxml_use_internal_errors(true);
-
-    $dom = new DOMDocument();
-    @$dom->loadHTML($html);
-
-    $xpath = new DOMXPath($dom);
-
-    $queries = [
-        '//img[contains(@src, "featureassets.gocomics.com/assets/")]',
-        '//img[contains(@src, "assets.amuniversal.com/")]',
-        '//meta[@property="og:image"]/@content'
-    ];
-
-    foreach ($queries as $query) {
-        $nodes = $xpath->query($query);
-        if (!$nodes || $nodes->length === 0) {
-            continue;
-        }
-
-        foreach ($nodes as $node) {
-            $value = $node->nodeValue;
-
-            if ($node instanceof DOMElement) {
-                $value = $node->getAttribute('src');
-                if (!$value) {
-                    $value = $node->getAttribute('data-src');
-                }
-            }
-
-            $value = html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-
-            if (isValidComicImageUrl($value)) {
-                return $value;
-            }
-        }
-    }
-
-    return null;
-}
-
-function isValidComicImageUrl($url) {
-    if (!$url) {
-        return false;
-    }
-
-    return (
-        str_contains($url, 'featureassets.gocomics.com/assets/') ||
-        str_contains($url, 'assets.amuniversal.com/') ||
-        str_contains($url, '/comics/')
-    );
-}
-
-function loadExistingEntries($filePath) {
-    $entries = [];
-
-    if (!file_exists($filePath)) {
-        return $entries;
-    }
-
-    $xml = @simplexml_load_file($filePath);
-    if ($xml === false) {
-        return $entries;
-    }
-
-    $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
-
-    foreach ($xml->xpath('//atom:entry') as $entry) {
-        $entryId = (string)$entry->id;
-        $img = '';
-
-        $contentNodes = $entry->xpath('./atom:content');
-        if (!empty($contentNodes)) {
-            $contentHtml = (string)$contentNodes[0];
-            if (preg_match('/<img[^>]*src="([^"]+)"/i', $contentHtml, $match)) {
-                $img = $match[1];
-            }
-        }
-
-        $entries[] = [
-            'title' => (string)$entry->title,
-            'link' => (string)$entry->link['href'],
-            'updated' => (string)$entry->updated,
-            'id' => $entryId,
-            'img' => $img
-        ];
-    }
-
-    return $entries;
-}
-
-function mergeEntries($newEntries, $existingEntries) {
-    $finalEntries = [];
-    $seenIds = [];
-
-    foreach ($newEntries as $entry) {
-        if (!isset($seenIds[$entry['id']])) {
-            $finalEntries[] = $entry;
-            $seenIds[$entry['id']] = true;
-        }
-    }
-
-    foreach ($existingEntries as $entry) {
-        if (!isset($seenIds[$entry['id']])) {
-            $finalEntries[] = $entry;
-            $seenIds[$entry['id']] = true;
-        }
-    }
-
-    return $finalEntries;
-}
-
-function createAtomFeedHeader($comic, $title, $updatedDate) {
-    $escapedTitle = htmlspecialchars($title, ENT_QUOTES | ENT_XML1, 'UTF-8');
-    $escapedComic = htmlspecialchars($comic, ENT_QUOTES | ENT_XML1, 'UTF-8');
-    $selfLink = htmlspecialchars("https://askl3pios.github.io/rssbridge-export/{$comic}.xml", ENT_QUOTES | ENT_XML1, 'UTF-8');
-    $gocomicsLink = htmlspecialchars("https://www.gocomics.com/{$comic}", ENT_QUOTES | ENT_XML1, 'UTF-8');
-
-    return <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <title>{$escapedTitle}</title>
-  <link href="{$gocomicsLink}" />
-  <link rel="self" href="{$selfLink}" type="application/atom+xml" />
-  <updated>{$updatedDate}</updated>
-  <id>{$gocomicsLink}</id>
-
-XML;
-}
-
-fetchGoComics('brewsterrockit', 'Brewster Rockit');
-fetchGoComics('shermanslagoon', "Sherman's Lagoon");
-fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
-
-?>
