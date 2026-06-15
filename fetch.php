@@ -19,7 +19,7 @@ function fetchGoComics($comic, $title) {
     $newEntries = [];
     $currentDate = new DateTimeImmutable('now', new DateTimeZone('UTC'));
 
-    for ($i = 0; $i < 14; $i++) {
+    for ($i = 0; $i < 7; $i++) {
         $dateObj = $currentDate->modify("-{$i} days");
         $datePath = $dateObj->format('Y/m/d');
         $entryDate = $dateObj->format('Y-m-d');
