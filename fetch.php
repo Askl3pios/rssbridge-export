@@ -1,160 +1,66 @@
 <?php
 
-// Konfigurera standard tidszon för DateTime-objekt
 date_default_timezone_set('UTC');
 
-/**
- * Hämtar och skapar ett RSS/Atom-flöde för en GoComics-serie.
- *
- * @param string $comic GoComics slug (t.ex. 'brewsterrockit')
- * @param string $title Den fullständiga titeln på serien (t.ex. 'Brewster Rockit')
- */
 function fetchGoComics($comic, $title) {
     $filePath = __DIR__ . "/{$comic}.xml";
-    $existingEntries = [];
-
-    if (file_exists($filePath)) {
-        $xml = @simplexml_load_file($filePath);
-        if ($xml !== false) {
-            $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
-            foreach ($xml->xpath('//atom:entry') as $entry) {
-                $existingEntries[(string)$entry->id] = true;
-            }
-        }
-    }
+    $existingEntries = loadExistingEntries($filePath);
 
     $newEntries = [];
     $currentDate = new DateTimeImmutable('now', new DateTimeZone('UTC'));
 
     for ($i = 0; $i < 14; $i++) {
-        $dateObj = $currentDate->modify("-$i days");
+        $dateObj = $currentDate->modify("-{$i} days");
         $datePath = $dateObj->format('Y/m/d');
         $entryDate = $dateObj->format('Y-m-d');
+        $entryLink = "https://www.gocomics.com/{$comic}/{$datePath}";
+        $entryId = $entryLink;
 
-        $url = "https://www.gocomics.com/{$comic}/$datePath";
-        // Använd stream_context_create för att sätta en timeout och undvika att skriptet hänger
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 10 // 10 sekunders timeout
-            ]
-        ]);
-        $html = @file_get_contents($url, false, $context);
-
-        if ($html === false || empty($html)) {
-            // error_log("Kunde inte hämta HTML för $url"); // För felsökning
-            continue; // Hoppa över om URL inte kan nås eller om HTML är tom
+        $html = fetchHtml($entryLink);
+        if ($html === null) {
+            continue;
         }
 
-        $imgUrl = null;
+        $imgUrl = extractComicImageUrl($html);
 
-        // FÖRST: Försök hitta bilden via den mest specifika strukturen (<picture class="item-comic-image">)
-        if (preg_match('/<picture class="item-comic-image">\s*<source[^>]*>\s*<img src="([^"]+)"[^>]*>/', $html, $match)) {
-             $imgUrl = $match[1];
-        }
-        // ANDRA: Fallback till og:image meta-taggen
-        else if (preg_match('/<meta property="og:image" content="([^"]+)"/', $html, $match)) {
-            $imgUrl = $match[1];
-        }
-        // TREDJE: Mer generell sökning efter img-taggar med specifik src-struktur och klass (från förra gången)
-        else if (preg_match('/<img[^>]*src="([^"]+\/comics\/[^"]+)"[^>]*class="[^"]*comic-book-image[^"]*"[^>]*>/', $html, $match)) {
-            $imgUrl = $match[1];
-        }
-        // FJÄRDE: NY - Sök efter featureassets.gocomics.com/assets/ med base64-ish-hash (används nu för 1 & 2 juli)
-        else if (preg_match('/<img[^>]*src="(https:\/\/featureassets\.gocomics\.com\/assets\/[a-f0-9]+)"[^>]*>/', $html, $match)) {
-            $imgUrl = $match[1];
-        }
-        // FEMTE: NY - Sök efter en mer generell img-tag med assets.amuniversal.com (också vanlig)
-        else if (preg_match('/<img[^>]*src="(https:\/\/assets\.amuniversal\.com\/[a-f0-9]+)"[^>]*>/', $html, $match)) {
-            $imgUrl = $match[1];
+        if (!$imgUrl) {
+            continue;
         }
 
-
-        if ($imgUrl) {
-            $entryLink = "https://www.gocomics.com/{$comic}/$datePath";
-            $entryId = $entryLink;
-
-            if (isset($existingEntries[$entryId])) {
-                // Denna post finns redan, men vi fortsätter skrapa bakåt för att hitta ALLA de senaste.
-                // Vi hanterar sammanslagningen i slutet för att undvika att lägga till gamla poster i flödet igen.
-            }
-
-            $newEntries[] = [
-                'title' => htmlspecialchars("$title - $entryDate"),
-                'link' => htmlspecialchars($entryLink),
-                'updated' => $dateObj->format(DateTime::ATOM),
-                'id' => htmlspecialchars($entryId),
-                'img' => htmlspecialchars($imgUrl)
-            ];
-        } else {
-            // error_log("Kunde inte hitta bild-URL för $url för serie $title"); // Avkommentera för felsökning
-            // Om ingen bild hittades, inkludera inte denna post för att undvika tomma poster.
-        }
+        $newEntries[] = [
+            'title' => htmlspecialchars("{$title} - {$entryDate}", ENT_QUOTES | ENT_XML1, 'UTF-8'),
+            'link' => htmlspecialchars($entryLink, ENT_QUOTES | ENT_XML1, 'UTF-8'),
+            'updated' => $dateObj->format(DateTime::ATOM),
+            'id' => htmlspecialchars($entryId, ENT_QUOTES | ENT_XML1, 'UTF-8'),
+            'img' => htmlspecialchars($imgUrl, ENT_QUOTES | ENT_XML1, 'UTF-8')
+        ];
     }
 
-    // Vänd arrayen så de nyaste serierna kommer först
-    $newEntries = array_reverse($newEntries);
+    $finalEntries = mergeEntries($newEntries, $existingEntries);
 
-    // Filtrera bort verkliga dubbletter och samla alla poster (nya och gamla) i en unik och sorterad lista
-    $finalEntries = [];
-    $seenIds = [];
-
-    // Lägg till de nya posterna först
-    foreach ($newEntries as $entry) {
-        if (!isset($seenIds[$entry['id']])) {
-            $finalEntries[] = $entry;
-            $seenIds[$entry['id']] = true;
-        }
-    }
-
-    // Lägg till befintliga poster som inte redan lagts till
-    if (file_exists($filePath)) {
-        $xml = @simplexml_load_file($filePath);
-        if ($xml !== false) {
-            $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
-            foreach ($xml->xpath('//atom:entry') as $entry) {
-                $entryId = (string)$entry->id;
-                if (!isset($seenIds[$entryId])) {
-                    $finalEntries[] = [
-                        'title' => (string)$entry->title,
-                        'link' => (string)$entry->link,
-                        'updated' => (string)$entry->updated,
-                        'id' => (string)$entry->id,
-                        'img' => (string)($entry->content->xpath('img/@src')[0] ?? '')
-                    ];
-                    $seenIds[$entryId] = true;
-                }
-            }
-        }
-    }
-    
-    // Sortera alla poster efter datum, så de nyaste alltid kommer först
-    usort($finalEntries, function($a, $b) {
-        return strtotime($b['updated']) - strtotime($a['updated']);
-    });
-
-
-    // Om inga poster alls hittades, skriv en tom feed-struktur (om filen inte fanns initialt)
     if (empty($finalEntries)) {
         if (!file_exists($filePath)) {
-            $rssFeed = createAtomFeedHeader($comic, $title, date(DateTime::ATOM));
-            $rssFeed .= "</feed>\n";
-            file_put_contents($filePath, $rssFeed);
+            $feed = createAtomFeedHeader($comic, $title, date(DateTime::ATOM));
+            $feed .= "</feed>\n";
+            file_put_contents($filePath, $feed);
         }
         return;
     }
 
-    // Skapa headern för Atom-flödet
-    $latestUpdate = $finalEntries[0]['updated'];
-    $rssFeed = createAtomFeedHeader($comic, $title, $latestUpdate);
+    usort($finalEntries, function ($a, $b) {
+        return strtotime($b['updated']) <=> strtotime($a['updated']);
+    });
 
-    // Lägg till de slutgiltiga, unika och sorterade posterna
+    $latestUpdate = $finalEntries[0]['updated'];
+    $feed = createAtomFeedHeader($comic, $title, $latestUpdate);
+
     foreach ($finalEntries as $entry) {
         $imgTag = '';
         if (!empty($entry['img'])) {
-            $imgTag = '<img src="' . htmlspecialchars($entry['img']) . '" alt="' . htmlspecialchars($entry['title']) . '" />';
+            $imgTag = '<img src="' . $entry['img'] . '" alt="' . $entry['title'] . '" />';
         }
 
-        $rssFeed .= <<<ENTRY
+        $feed .= <<<ENTRY
   <entry>
     <title>{$entry['title']}</title>
     <link href="{$entry['link']}"/>
@@ -169,22 +75,152 @@ function fetchGoComics($comic, $title) {
 ENTRY;
     }
 
-    // Avsluta flödet
-    $rssFeed .= "\n\n";
-    $rssFeed .= "</feed>\n";
-
-    // Skriv till fil
-    file_put_contents($filePath, $rssFeed);
+    $feed .= "</feed>\n";
+    file_put_contents($filePath, $feed);
 }
 
-/**
- * Hjälpfunktion för att skapa headern för Atom-flödet.
- */
+function fetchHtml($url) {
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'timeout' => 20,
+            'ignore_errors' => true,
+            'header' => implode("\r\n", [
+                'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language: en-US,en;q=0.9',
+                'Cache-Control: no-cache',
+                'Pragma: no-cache'
+            ])
+        ]
+    ]);
+
+    $html = @file_get_contents($url, false, $context);
+
+    if ($html === false || trim($html) === '') {
+        return null;
+    }
+
+    return $html;
+}
+
+function extractComicImageUrl($html) {
+    libxml_use_internal_errors(true);
+
+    $dom = new DOMDocument();
+    @$dom->loadHTML($html);
+
+    $xpath = new DOMXPath($dom);
+
+    $queries = [
+        '//img[contains(@src, "featureassets.gocomics.com/assets/")]',
+        '//img[contains(@src, "assets.amuniversal.com/")]',
+        '//meta[@property="og:image"]/@content'
+    ];
+
+    foreach ($queries as $query) {
+        $nodes = $xpath->query($query);
+        if (!$nodes || $nodes->length === 0) {
+            continue;
+        }
+
+        foreach ($nodes as $node) {
+            $value = $node->nodeValue;
+
+            if ($node instanceof DOMElement) {
+                $value = $node->getAttribute('src');
+                if (!$value) {
+                    $value = $node->getAttribute('data-src');
+                }
+            }
+
+            $value = html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            if (isValidComicImageUrl($value)) {
+                return $value;
+            }
+        }
+    }
+
+    return null;
+}
+
+function isValidComicImageUrl($url) {
+    if (!$url) {
+        return false;
+    }
+
+    return (
+        str_contains($url, 'featureassets.gocomics.com/assets/') ||
+        str_contains($url, 'assets.amuniversal.com/') ||
+        str_contains($url, '/comics/')
+    );
+}
+
+function loadExistingEntries($filePath) {
+    $entries = [];
+
+    if (!file_exists($filePath)) {
+        return $entries;
+    }
+
+    $xml = @simplexml_load_file($filePath);
+    if ($xml === false) {
+        return $entries;
+    }
+
+    $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
+
+    foreach ($xml->xpath('//atom:entry') as $entry) {
+        $entryId = (string)$entry->id;
+        $img = '';
+
+        $contentNodes = $entry->xpath('./atom:content');
+        if (!empty($contentNodes)) {
+            $contentHtml = (string)$contentNodes[0];
+            if (preg_match('/<img[^>]*src="([^"]+)"/i', $contentHtml, $match)) {
+                $img = $match[1];
+            }
+        }
+
+        $entries[] = [
+            'title' => (string)$entry->title,
+            'link' => (string)$entry->link['href'],
+            'updated' => (string)$entry->updated,
+            'id' => $entryId,
+            'img' => $img
+        ];
+    }
+
+    return $entries;
+}
+
+function mergeEntries($newEntries, $existingEntries) {
+    $finalEntries = [];
+    $seenIds = [];
+
+    foreach ($newEntries as $entry) {
+        if (!isset($seenIds[$entry['id']])) {
+            $finalEntries[] = $entry;
+            $seenIds[$entry['id']] = true;
+        }
+    }
+
+    foreach ($existingEntries as $entry) {
+        if (!isset($seenIds[$entry['id']])) {
+            $finalEntries[] = $entry;
+            $seenIds[$entry['id']] = true;
+        }
+    }
+
+    return $finalEntries;
+}
+
 function createAtomFeedHeader($comic, $title, $updatedDate) {
-    $escapedTitle = htmlspecialchars($title);
-    $escapedComic = htmlspecialchars($comic);
-    $selfLink = htmlspecialchars("https://askl3pios.github.io/rssbridge-export/{$comic}.xml");
-    $gocomicsLink = htmlspecialchars("https://www.gocomics.com/{$comic}");
+    $escapedTitle = htmlspecialchars($title, ENT_QUOTES | ENT_XML1, 'UTF-8');
+    $escapedComic = htmlspecialchars($comic, ENT_QUOTES | ENT_XML1, 'UTF-8');
+    $selfLink = htmlspecialchars("https://askl3pios.github.io/rssbridge-export/{$comic}.xml", ENT_QUOTES | ENT_XML1, 'UTF-8');
+    $gocomicsLink = htmlspecialchars("https://www.gocomics.com/{$comic}", ENT_QUOTES | ENT_XML1, 'UTF-8');
 
     return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -198,7 +234,6 @@ function createAtomFeedHeader($comic, $title, $updatedDate) {
 XML;
 }
 
-// --- Lägg till dina serier här ---
 fetchGoComics('brewsterrockit', 'Brewster Rockit');
 fetchGoComics('shermanslagoon', "Sherman's Lagoon");
 fetchGoComics('calvinandhobbes', 'Calvin and Hobbes');
