@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Sherman&#039;s Lagoon</title>
+  <title>Sherman&apos;s Lagoon</title>
   <link href="https://www.gocomics.com/shermanslagoon" />
   <link rel="self" href="https://askl3pios.github.io/rssbridge-export/shermanslagoon.xml" type="application/atom+xml" />
   <updated>2025-10-05T23:17:43+00:00</updated>
@@ -1115,6 +1115,4 @@
     </author>
     <content type="html"><![CDATA[]]></content>
   </entry>
-
-
 </feed>
